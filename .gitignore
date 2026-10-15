@@ -19,6 +19,12 @@ dist/changelog.md
 .settings/
 bin/
 
+# Internal docs (kept local, not published)
+AGENTS.md
+GOTCHAS.md
+PROJECT-GUIDE.md
+RELEASE-GUIDE.md
+
 # Python (release tooling)
 __pycache__/
 *.pyc
