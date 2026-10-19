@@ -33,12 +33,18 @@ public final class BorderlineConfig {
     /** Last requested overworld world size in blocks (diameter), or null if never set. */
     public Double worldSize = null;
 
-    public Dimension nether = new Dimension(true, 0.125D, 0.125D);
+    public Dimension nether = new Dimension(true, 0.125D, 1.0D);
     public Dimension end = new Dimension(true, 0.5D, 1.0D);
 
     public static final class Dimension {
         public boolean enabled;
         public double sizeScale;
+
+        /**
+         * Multiplier applied to the overworld center in overworld coordinates. Vanilla applies the
+         * dimension's own coordinate scale when the border is read (the Nether divides by 8), so 1.0
+         * matches the overworld center in every dimension.
+         */
         public double centerScale;
 
         public Dimension() {}
@@ -94,7 +100,7 @@ public final class BorderlineConfig {
 
     private BorderlineConfig normalized() {
         if (nether == null) {
-            nether = new Dimension(true, 0.125D, 0.125D);
+            nether = new Dimension(true, 0.125D, 1.0D);
         }
         if (end == null) {
             end = new Dimension(true, 0.5D, 1.0D);

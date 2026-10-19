@@ -10,9 +10,13 @@ the integrated server) and needs no client mod.
 ## What it does
 
 The overworld border is the source of truth. The Nether and End sizes are the overworld size
-multiplied by a configurable scale (Nether `0.125`, End `0.5` by default; End center stays 1:1).
-Vanilla mirrors the overworld border to the other dimensions 1:1; Borderline re-derives them with the
-scales on every server start, whenever the overworld border changes, and on demand with a command.
+multiplied by a configurable scale (Nether `0.125`, End `0.5` by default). Vanilla mirrors the
+overworld border to the other dimensions 1:1; Borderline re-derives them with the scales on every
+server start, whenever the overworld border changes, and on demand with a command.
+
+Vanilla only tells clients about the overworld border, so Borderline also pushes each player the
+border of the dimension they are in, using vanilla border packets. Unmodded clients therefore render
+the correct border in every dimension.
 
 The last world size set through the mod is saved in `config/borderline.json` and re-imposed on the
 overworld at every start, so the configured size survives restarts even if the world data is reset.
@@ -24,7 +28,7 @@ overworld at every start, so the configured size survives restarts even if the w
   "enabled": true,
   "skipWhenUnbounded": true,
   "worldSize": null,
-  "nether": { "enabled": true, "sizeScale": 0.125, "centerScale": 0.125 },
+  "nether": { "enabled": true, "sizeScale": 0.125, "centerScale": 1.0 },
   "end": { "enabled": true, "sizeScale": 0.5, "centerScale": 1.0 }
 }
 ```
@@ -34,7 +38,8 @@ overworld at every start, so the configured size survives restarts even if the w
   is still at the vanilla default (unbounded).
 - `worldSize` - the last overworld size (diameter) set through the mod, or `null`.
 - `nether` / `end` - per-dimension `enabled`, `sizeScale` (border size multiplier) and `centerScale`
-  (border center multiplier).
+  (center multiplier applied in overworld coordinates; vanilla then applies the dimension's own
+  coordinate scale, so `1.0` matches the overworld center everywhere).
 
 ### Commands (op level 2)
 
@@ -44,9 +49,10 @@ overworld at every start, so the configured size survives restarts even if the w
 - `/borderline status` - print the current size and center of each dimension.
 
 > **Vanilla note.** Vanilla links the overworld border to every other dimension 1:1 (via a border
-> change listener). Borderline attaches its own listener on top, so any overworld border change -
-> including a plain `/worldborder set` - immediately re-derives the Nether/End borders with the
-> configured scales.
+> change listener) and only sends the overworld border to clients. Borderline attaches its own
+> listener on top, so any overworld border change - including a plain `/worldborder set` -
+> immediately re-derives the Nether/End borders with the configured scales, and its per-player
+> packet push keeps each client showing its own dimension's border.
 
 ## Build
 
