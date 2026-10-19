@@ -25,6 +25,9 @@ GOTCHAS.md
 PROJECT-GUIDE.md
 RELEASE-GUIDE.md
 
+# Local deploy script (machine-specific Prism paths + WinSCP sessions)
+deploy.sh
+
 # Python (release tooling)
 __pycache__/
 *.pyc
