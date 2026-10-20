@@ -84,7 +84,7 @@ python tools/release.py --mod all             # build + GitHub release, CI publi
 
 The staged build groups (`releaseLoaderJars`, `releaseLoaderBundles`, `releaseUniversal`,
 `releaseUniversalBundles`) each write their own directory; `releaseJars` unions them into
-`build/release/`. Release workflows live in `.github/workflows/`; they create the GitHub release and
+`build/release/<mc>/`. Release workflows live in `.github/workflows/`; they create the GitHub release and
 publish to CurseForge/Modrinth when the repository is configured for it (see `PROJECT-GUIDE.md` →
 **Enabling CI publishing**).
 
