@@ -104,7 +104,7 @@ tools/{versioning,release}.py           # version scheme + local release driver
 ```
 
 The two loader builds are separate (Loom and NeoGradle cannot share one Gradle project). The shared
-sources are compiled once per loader and merged into `<module>-<version>-universal.jar`, which works
+sources are compiled once per loader and merged into `<module>-<version>-universal-<mc>.jar`, which works
 on both loaders.
 
 See the template's top-level README for the full workflow.
