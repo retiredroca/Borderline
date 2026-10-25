@@ -29,6 +29,9 @@ RELEASE-GUIDE.md
 # Local deploy script (machine-specific Prism paths + WinSCP sessions)
 deploy.sh
 
+# Local dev session script
+oc.sh
+
 # Python (release tooling)
 __pycache__/
 *.pyc

@@ -5,18 +5,19 @@ multi-version template.
 
 Borderline reads the **overworld world border** and derives the **Nether** and **End** borders from
 it, so a single world size applies across all dimensions. It runs on the server (singleplayer uses
-the integrated server) and needs no client mod.
+the integrated server) and needs no client mod. Supports Minecraft **1.21.1** and **26.3** on Fabric
+and NeoForge.
 
 ## What it does
 
 The overworld border is the source of truth. The Nether and End sizes are the overworld size
-multiplied by a configurable scale (Nether `0.125`, End `0.5` by default). Vanilla mirrors the
-overworld border to the other dimensions 1:1; Borderline re-derives them with the scales on every
-server start, whenever the overworld border changes, and on demand with a command.
+multiplied by a configurable scale (Nether `0.125`, End `0.5` by default). Borderline re-derives them
+with the scales on every server start, whenever the overworld border changes, and on demand with a
+command.
 
-Vanilla only tells clients about the overworld border, so Borderline also pushes each player the
-border of the dimension they are in, using vanilla border packets. Unmodded clients therefore render
-the correct border in every dimension.
+Vanilla does not keep a per-dimension client border, so Borderline also pushes each player the border
+of the dimension they are in, using vanilla border packets. Unmodded clients therefore render the
+correct border in every dimension.
 
 The last world size set through the mod is saved in `config/borderline.json` and re-imposed on the
 overworld at every start, so the configured size survives restarts even if the world data is reset.
@@ -48,21 +49,21 @@ overworld at every start, so the configured size survives restarts even if the w
 - `/borderline sync` - re-derive from the live overworld border and save its size.
 - `/borderline status` - print the current size and center of each dimension.
 
-> **Vanilla note.** Vanilla links the overworld border to every other dimension 1:1 (via a border
-> change listener) and only sends the overworld border to clients. Borderline attaches its own
-> listener on top, so any overworld border change - including a plain `/worldborder set` -
-> immediately re-derives the Nether/End borders with the configured scales, and its per-player
-> packet push keeps each client showing its own dimension's border.
+> **Vanilla note.** A plain `/worldborder` command still edits the overworld border. Borderline
+> listens for that change and immediately re-derives the Nether/End borders with the configured
+> scales, and its per-player packet push keeps each client showing its own dimension's border.
 
 ## Build
 
 ```bash
-./gradlew build              # default Minecraft version (gradle.properties -> mc)
-./gradlew -Pmc=1.21.1 build  # a specific Minecraft version
+./gradlew build              # default Minecraft version (gradle.properties -> mc = 1.21.1)
+./gradlew -Pmc=1.21.1 build  # 1.21.1
+./gradlew -Pmc=26.3 build    # 26.3
 ```
 
-> Gradle 8.14 must run on JDK 17–23 (the example targets Java 21). If your default `java` is newer,
-> point `JAVA_HOME` at a JDK 21 or set `org.gradle.java.home` in `gradle.properties`.
+> The wrapper is **Gradle 9.5.1**. Run it with a **JDK 21** `JAVA_HOME`; the build selects its own
+> toolchain per version (Java 21 for 1.21.1, Java 25 for 26.3), so a **JDK 25** installation must be
+> detectable by Gradle. If it is not, add it through `org.gradle.java.installations.paths`.
 
 ## Adding a Minecraft version
 
@@ -78,9 +79,13 @@ Versions use `<major>.<minor>.<patch>.<yymmddhh>`, with the stamp taken in the t
 the project was created (`TIMEZONE` in `tools/versioning.py`). One command drives a release:
 
 ```bash
-python tools/release.py --mod all --dry-run   # preview
-python tools/release.py --mod all             # build + GitHub release, CI publishes
+python tools/release.py --mod all --dry-run              # preview the default version
+python tools/release.py --mod all --mc 26.3 --dry-run   # preview 26.3
+python tools/release.py --mod all                       # build + GitHub release, CI publishes
+python tools/release.py --mod all --mc 26.3             # release 26.3
 ```
+
+`--mc` defaults to `mc` in `gradle.properties` (1.21.1); pass `--mc 26.3` for the newer version.
 
 The staged build groups (`releaseLoaderJars`, `releaseLoaderBundles`, `releaseUniversal`,
 `releaseUniversalBundles`) each write their own directory; `releaseJars` unions them into
@@ -99,12 +104,12 @@ versions/<mc>/<module>/
 ├─ module.properties                    # id / name / group / authors / license / description
 ├─ common/                              # shared sources (no loader imports)
 ├─ fabric/                              # Loom build; compiles common into <group>.fabric.common
-└─ neoforge/                            # NeoGradle build; compiles common into <group>.neoforge.common
+└─ neoforge/                            # NeoForge build (NeoGradle on 1.21.1, ModDevGradle on 26.3)
 tools/{versioning,release}.py           # version scheme + local release driver
 ```
 
-The two loader builds are separate (Loom and NeoGradle cannot share one Gradle project). The shared
-sources are compiled once per loader and merged into `<module>-<version>-universal-<mc>.jar`, which works
-on both loaders.
+The two loader builds are separate (Loom and the NeoForge plugin cannot share one Gradle project). The
+shared sources are compiled once per loader and merged into `<module>-<version>-universal-<mc>.jar`,
+which works on both loaders.
 
 See the template's top-level README for the full workflow.

@@ -43,7 +43,7 @@ adds no blocks, items, entities, or registry entries.
 
 ## Installation
 
-1. Install **Fabric** (with Fabric API) or **NeoForge** for Minecraft 1.21.1.
+1. Install **Fabric** (with Fabric API) or **NeoForge** for Minecraft 1.21.1 or 26.3.
 2. Put the mod jar in the server's `mods/` folder.
 3. Start the server.
 
@@ -110,7 +110,7 @@ The default scales are `0.125` for the Nether and `0.5` for the End. Set a dimen
 
 ## Compatibility
 
-- Minecraft 1.21.1
+- Minecraft 1.21.1 and 26.3
 - Fabric and NeoForge
 - Server-side only; no client installation required
 
