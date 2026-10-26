@@ -47,15 +47,17 @@ moduleDirs.each { moduleDir ->
 
         // Fabric half: fabric classes + relocated common + fabric.mod.json.
         from({ def f = fabricJar(); f == null ? [] : zipTree(f) })
-        // NeoForge-only classes + metadata. The relocated common lives under <group>.neoforge.common,
-        // so the neoforge/** include below pulls it in.
+        // NeoForge-only classes + metadata. The module's NeoForge side has two class roots: its loader
+        // tree, which sits at <group>/<id>/neoforge when several modules share one group and at
+        // <group>/neoforge when a module's package root is its group, and the relocated common, which
+        // is always under <group>/neoforge/common. In this single-module layout the loader root is the
+        // second of those, so the <id> pattern matches nothing here; it is kept so every copy of this
+        // task reads alike. The mixin config and refmap sit at the jar root, so they go in by name.
         from({ def f = neoforgeJar(); f == null ? [] : zipTree(f) }) {
             include "${groupPath}/neoforge/**"
+            include "${groupPath}/${id}/neoforge/**"
             include 'META-INF/neoforge.mods.toml'
             include 'META-INF/accesstransformer.cfg'
-            // The mixin config and its refmap sit at the jar root, not under <group>.neoforge, so
-            // without these the universal jar carries neoforge.mods.toml naming a mixin config it does
-            // not contain - and the mixins then do not apply on that loader, or the load fails on it.
             include '**/*.mixins.json'
             include '**/*refmap.json'
         }

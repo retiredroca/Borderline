@@ -1,10 +1,9 @@
 name: Publish Release to Platforms
 
-# Publishes an existing GitHub release's jars to CurseForge/Modrinth (no build). Normally started by
-# tools/release.py, which dispatches this workflow after creating the release locally (GitHub may
-# not fire the `release: published` event, so that trigger is only a fallback). Releases created by
-# the build-mode workflow are skipped (author is github-actions[bot]); releases the local tool
-# already published are skipped too (marker in the body).
+# Publishes an existing GitHub release's jars to CurseForge/Modrinth (no build). This `release:
+# published` event is the only trigger: tools/release.py creates the release as a draft, attaches
+# the jars, then publishes it, so the event fires on a complete release. Releases the local tool
+# already published (or that must not be published) are skipped via the marker in the body.
 on:
   release:
     types: [published]
