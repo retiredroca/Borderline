@@ -76,22 +76,27 @@ overworld at every start, so the configured size survives restarts even if the w
 ## Releases
 
 Versions use `<major>.<minor>.<patch>.<yymmddhh>`, with the stamp taken in the timezone chosen when
-the project was created (`TIMEZONE` in `tools/versioning.py`). One command drives a release:
+the project was created (`TIMEZONE` in `tools/versioning.py`). Releasing is two local phases and a
+GitHub tag workflow:
 
 ```bash
-python tools/release.py --mod all --dry-run              # preview the default version
-python tools/release.py --mod all --mc 26.3 --dry-run   # preview 26.3
-python tools/release.py --mod all                       # build + GitHub release, CI publishes
-python tools/release.py --mod all --mc 26.3             # release 26.3
+python tools/release.py --mod all --dry-run              # preview 1.21.1 and 26.3
+python tools/release.py --mod all                       # stamp/build both; no commit
+# commit and push the prepared files yourself
+python tools/release.py --create-tags                   # create local tags; push them yourself
 ```
 
-`--mc` defaults to `mc` in `gradle.properties` (1.21.1); pass `--mc 26.3` for the newer version.
+Without `--mc` both versions are prepared and tagged; `--mc 26.3` selects one. The tag push triggers
+`.github/workflows/release-tag.yml`, which builds the jars in CI, creates the GitHub release with
+every jar and sources jar, and publishes it. The release event then runs the platform workflow, which
+uploads only universal jars to CurseForge/Modrinth. The local script never commits or pushes; the CI
+never commits; commit the prepared files and the downloaded `release-state.properties` artifact
+yourself.
 
 The staged build groups (`releaseLoaderJars`, `releaseLoaderBundles`, `releaseUniversal`,
 `releaseUniversalBundles`) each write their own directory; `releaseJars` unions them into
-`build/release/<mc>/`. Release workflows live in `.github/workflows/`; they create the GitHub release and
-publish to CurseForge/Modrinth when the repository is configured for it (see `PROJECT-GUIDE.md` →
-**Enabling CI publishing**).
+`build/release/<mc>/`. Release workflows live in `.github/workflows/`; see `PROJECT-GUIDE.md` →
+**Enabling CI publishing** for the variables and secrets.
 
 See `PROJECT-GUIDE.md` for building, adding Minecraft versions and the build layout,
 `RELEASE-GUIDE.md` for the release workflow, and `AGENTS.md` for repository conventions.
