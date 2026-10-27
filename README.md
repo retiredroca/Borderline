@@ -76,22 +76,20 @@ overworld at every start, so the configured size survives restarts even if the w
 ## Releases
 
 Versions use `<major>.<minor>.<patch>.<yymmddhh>`, with the stamp taken in the timezone chosen when
-the project was created (`TIMEZONE` in `tools/versioning.py`). Releasing is two local phases and a
-GitHub tag workflow:
+the project was created (`TIMEZONE` in `tools/versioning.py`). Releasing is two local phases:
 
 ```bash
 python tools/release.py --mod all --dry-run              # preview 1.21.1 and 26.3
 python tools/release.py --mod all                       # stamp/build both; no commit
 # commit and push the prepared files yourself
-python tools/release.py --create-tags                   # create local tags; push them yourself
+python tools/release.py --create-tags                   # push tags + publish the GitHub releases
 ```
 
-Without `--mc` both versions are prepared and tagged; `--mc 26.3` selects one. The tag push triggers
-`.github/workflows/release-tag.yml`, which builds the jars in CI, creates the GitHub release with
-every jar and sources jar, and publishes it. The release event then runs the platform workflow, which
-uploads only universal jars to CurseForge/Modrinth. The local script never commits or pushes; the CI
-never commits; commit the prepared files and the downloaded `release-state.properties` artifact
-yourself.
+Without `--mc` both versions are built and released; `--mc 26.3` selects one. The local jars are
+attached to the GitHub release; the release event runs the separate
+`.github/workflows/publish-release.yml`, which uploads only universal jars to CurseForge/Modrinth.
+Nothing is built in GitHub. The local script never commits; commit the prepared files and the
+downloaded `release-state.properties` artifact yourself.
 
 The staged build groups (`releaseLoaderJars`, `releaseLoaderBundles`, `releaseUniversal`,
 `releaseUniversalBundles`) each write their own directory; `releaseJars` unions them into
